@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { useLocation } from "wouter";
 import { ArrowRight } from "lucide-react";
 import logoImage from "@assets/GOJIRA_X_1767555736780.jpg";
 import type { HeroStatsResponse } from "@shared/routes";
