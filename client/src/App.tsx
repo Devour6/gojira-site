@@ -4,8 +4,9 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
-import Home from "@/pages/Home";
-import Validator from "@/pages/Validator";
+import Home from "@/pages/home";
+import Validator from "@/pages/validator";
+import { useEffect } from "react";
 
 function Router() {
   return (
@@ -18,6 +19,10 @@ function Router() {
 }
 
 function App() {
+  useEffect(() => {
+    document.documentElement.classList.add("dark");
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
