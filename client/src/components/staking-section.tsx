@@ -49,7 +49,7 @@ export function StakingSection() {
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-semibold text-white">Stake Solana</h3>
-                <span className="text-emerald-400 font-bold text-lg" data-testid="text-staking-apy">
+                <span className="text-white font-bold text-lg" data-testid="text-staking-apy">
                   {isLoading ? "..." : `${stakingData?.apy ?? 0}%`} <span className="text-sm font-normal text-muted-foreground">APY</span>
                 </span>
               </div>

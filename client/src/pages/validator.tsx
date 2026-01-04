@@ -79,11 +79,11 @@ export default function Validator() {
               </div>
             </div>
             <div className="p-5 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 card-glow flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center">
-                <Zap className="w-6 h-6 text-emerald-400" />
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <Zap className="w-6 h-6 text-gojira-red" />
               </div>
               <div>
-                <div className="text-2xl font-bold text-emerald-400">{validatorLoading ? "..." : `${validatorData?.apy}%`}</div>
+                <div className="text-2xl font-bold text-white">{validatorLoading ? "..." : `${validatorData?.apy}%`}</div>
                 <div className="text-sm text-muted-foreground">Current APY</div>
               </div>
             </div>
@@ -159,7 +159,7 @@ export default function Validator() {
 
                   <div className="flex items-center justify-between py-4 border-b border-border">
                     <span className="text-muted-foreground text-sm">APY</span>
-                    <span className="text-emerald-400 font-medium" data-testid="text-validator-apy">
+                    <span className="text-white font-medium" data-testid="text-validator-apy">
                       {validatorLoading ? "..." : `${validatorData?.apy}%`}
                     </span>
                   </div>
@@ -188,7 +188,7 @@ export default function Validator() {
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-semibold text-white">Stake Solana</h3>
-                  <span className="text-emerald-400 font-bold text-lg" data-testid="text-widget-apy">
+                  <span className="text-white font-bold text-lg" data-testid="text-widget-apy">
                     {stakingLoading ? "..." : `${stakingData?.apy?.toFixed(2) ?? "0.00"}%`} <span className="text-sm font-normal">APY</span>
                   </span>
                 </div>
