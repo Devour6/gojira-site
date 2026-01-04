@@ -11,6 +11,14 @@ export default {
         sm: ".1875rem", /* 3px */
       },
       colors: {
+        gojira: {
+          red: "#E31837",
+          dark: "#1A1A1A",
+          darker: "#0F0F0F",
+          card: "#2D2D2D",
+          text: "#F5F5F5",
+          muted: "#888888"
+        },
         // Flat / base colors (regular buttons)
         background: "hsl(var(--background) / <alpha-value>)",
         foreground: "hsl(var(--foreground) / <alpha-value>)",
@@ -83,6 +91,8 @@ export default {
         },
       },
       fontFamily: {
+        display: ["'Oswald'", "sans-serif"],
+        body: ["'Inter'", "sans-serif"],
         sans: ["var(--font-sans)"],
         serif: ["var(--font-serif)"],
         mono: ["var(--font-mono)"],
