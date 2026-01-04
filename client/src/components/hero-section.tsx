@@ -85,7 +85,7 @@ export function HeroSection() {
             </div>
           </div>
           <div className="text-center p-6 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 card-glow">
-            <div className="text-3xl md:text-4xl font-bold text-gojira-red mb-2" data-testid="text-apy">
+            <div className="text-3xl md:text-4xl font-bold text-emerald-400 mb-2" data-testid="text-apy">
               {isLoading ? "..." : `${stats?.apy ?? 0}%`}
             </div>
             <div className="text-xs md:text-sm text-muted-foreground uppercase tracking-widest">
