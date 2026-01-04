@@ -21,35 +21,42 @@ export function HeroSection() {
   return (
     <section 
       id="hero" 
-      className="min-h-screen flex flex-col items-center justify-center pt-16 px-4 relative overflow-hidden"
+      className="min-h-screen flex flex-col items-center justify-center pt-16 px-4 relative overflow-hidden animated-gradient"
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-primary/5 pointer-events-none" />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 -left-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl" />
+      </div>
       
       <div className="relative z-10 max-w-4xl mx-auto text-center">
-        <div className="mb-8">
-          <img 
-            src={logoImage} 
-            alt="Gojira Logo" 
-            className="w-24 h-24 mx-auto rounded-full"
-            data-testid="img-hero-logo"
-          />
+        <div className="mb-8 float-animation">
+          <div className="relative inline-block">
+            <img 
+              src={logoImage} 
+              alt="Gojira Logo" 
+              className="w-28 h-28 mx-auto rounded-full glow-red border-2 border-primary/30"
+              data-testid="img-hero-logo"
+            />
+            <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl -z-10" />
+          </div>
         </div>
 
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+        <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight">
           Pushing the Limits<br />
-          of <span className="text-gojira-red gojira-underline">Web3 Innovation</span>
+          of <span className="text-gojira-red text-glow-red">Web3 Innovation</span>
         </h1>
 
-        <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-10">
+        <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-12">
           Gojira Holdings operates at the forefront of blockchain—powering
           Solana with our top-performing validator and investing in the next
           generation of Web3 innovation.
         </p>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
           <Button 
             size="lg" 
-            className="bg-primary hover:bg-primary/90 px-8"
+            className="bg-primary hover:bg-primary/90 glow-red-sm"
             onClick={() => {
               const element = document.getElementById("staking");
               if (element) element.scrollIntoView({ behavior: "smooth" });
@@ -61,7 +68,6 @@ export function HeroSection() {
           <Button 
             variant="outline" 
             size="lg"
-            className="px-8"
             onClick={() => window.location.href = "/validator"}
             data-testid="button-hero-validator"
           >
@@ -69,28 +75,28 @@ export function HeroSection() {
           </Button>
         </div>
 
-        <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto border-t border-border pt-10">
-          <div className="text-center">
-            <div className="text-2xl md:text-3xl font-bold text-white" data-testid="text-total-staked">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8 max-w-3xl mx-auto">
+          <div className="text-center p-6 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 card-glow">
+            <div className="text-3xl md:text-4xl font-bold stat-value mb-2" data-testid="text-total-staked">
               {isLoading ? "..." : formatNumber(stats?.totalStakedUsd ?? 0)}
             </div>
-            <div className="text-xs md:text-sm text-muted-foreground uppercase tracking-wider mt-1">
+            <div className="text-xs md:text-sm text-muted-foreground uppercase tracking-widest">
               Total Assets Staked
             </div>
           </div>
-          <div className="text-center">
-            <div className="text-2xl md:text-3xl font-bold text-white" data-testid="text-apy">
+          <div className="text-center p-6 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 card-glow">
+            <div className="text-3xl md:text-4xl font-bold text-gojira-red mb-2" data-testid="text-apy">
               {isLoading ? "..." : `${stats?.apy ?? 0}%`}
             </div>
-            <div className="text-xs md:text-sm text-muted-foreground uppercase tracking-wider mt-1">
+            <div className="text-xs md:text-sm text-muted-foreground uppercase tracking-widest">
               APY
             </div>
           </div>
-          <div className="text-center">
-            <div className="text-2xl md:text-3xl font-bold text-white" data-testid="text-uptime">
+          <div className="text-center p-6 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 card-glow">
+            <div className="text-3xl md:text-4xl font-bold stat-value mb-2" data-testid="text-uptime">
               {isLoading ? "..." : `${stats?.uptime30d ?? 0}%`}
             </div>
-            <div className="text-xs md:text-sm text-muted-foreground uppercase tracking-wider mt-1">
+            <div className="text-xs md:text-sm text-muted-foreground uppercase tracking-widest">
               Uptime (30D)
             </div>
           </div>

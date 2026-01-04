@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ExternalLink } from "lucide-react";
 import type { PortfolioListResponse } from "@shared/routes";
 
 export function PortfolioSection() {
@@ -9,26 +10,32 @@ export function PortfolioSection() {
   });
 
   return (
-    <section id="portfolio" className="py-20 px-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-12">
-          <Badge variant="outline" className="mb-4 text-gojira-red border-gojira-red/30 bg-gojira-red/10">
+    <section id="portfolio" className="py-24 px-4 relative">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+      </div>
+
+      <div className="max-w-6xl mx-auto relative z-10">
+        <div className="text-center mb-16">
+          <Badge variant="outline" className="mb-4 text-gojira-red border-gojira-red/30 bg-gojira-red/10 px-4 py-1">
             OUR INVESTMENTS
           </Badge>
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Strategic <span className="text-gojira-red">Portfolio</span>
+          <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
+            Strategic <span className="text-gojira-red text-glow-red">Portfolio</span>
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
             We've strategically invested in the most promising projects across the blockchain
             ecosystem, positioning ourselves at the forefront of Web3 innovation and development.
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {isLoading ? (
             Array.from({ length: 4 }).map((_, i) => (
-              <Card key={i} className="p-6 bg-card border-border hover-elevate">
+              <Card key={i} className="p-8 bg-card border-border">
                 <div className="w-20 h-20 mx-auto bg-muted rounded-full animate-pulse" />
+                <div className="h-4 bg-muted rounded mt-4 mx-auto w-20 animate-pulse" />
               </Card>
             ))
           ) : (
@@ -39,9 +46,13 @@ export function PortfolioSection() {
                 target="_blank" 
                 rel="noopener noreferrer"
                 data-testid={`card-portfolio-${item.id}`}
+                className="group"
               >
-                <Card className="p-6 bg-card border-border hover-elevate transition-transform hover:scale-[1.02] cursor-pointer">
-                  <div className="w-20 h-20 mx-auto bg-muted rounded-full flex items-center justify-center overflow-hidden">
+                <Card className="p-8 bg-card/50 backdrop-blur-sm border-border/50 card-glow relative overflow-visible">
+                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <ExternalLink className="w-4 h-4 text-muted-foreground" />
+                  </div>
+                  <div className="w-20 h-20 mx-auto bg-muted/50 rounded-full flex items-center justify-center overflow-hidden border border-border/50 group-hover:border-primary/30 transition-colors">
                     <img 
                       src={item.imageUrl} 
                       alt={item.name}
@@ -51,9 +62,9 @@ export function PortfolioSection() {
                       }}
                     />
                   </div>
-                  <div className="text-center mt-4">
-                    <h3 className="text-white font-medium">{item.name}</h3>
-                    <p className="text-muted-foreground text-xs mt-1">{item.category}</p>
+                  <div className="text-center mt-5">
+                    <h3 className="text-white font-semibold text-lg group-hover:text-gojira-red transition-colors">{item.name}</h3>
+                    <p className="text-muted-foreground text-sm mt-1">{item.category}</p>
                   </div>
                 </Card>
               </a>

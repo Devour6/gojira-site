@@ -260,4 +260,73 @@
     text-decoration-color: hsl(354 82% 50%);
     text-underline-offset: 4px;
   }
+
+  /* Glow effects */
+  .glow-red {
+    box-shadow: 0 0 20px rgba(227, 24, 55, 0.3), 0 0 40px rgba(227, 24, 55, 0.1);
+  }
+
+  .glow-red-sm {
+    box-shadow: 0 0 10px rgba(227, 24, 55, 0.2);
+  }
+
+  .text-glow-red {
+    text-shadow: 0 0 20px rgba(227, 24, 55, 0.5);
+  }
+
+  /* Animated gradient background */
+  .animated-gradient {
+    background: linear-gradient(-45deg, hsl(0 0% 11%), hsl(354 82% 20% / 0.3), hsl(0 0% 11%), hsl(354 82% 15% / 0.2));
+    background-size: 400% 400%;
+    animation: gradient-shift 15s ease infinite;
+  }
+
+  @keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Pulse animation for status indicators */
+  .pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  /* Card hover glow */
+  .card-glow {
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+
+  .card-glow:hover {
+    box-shadow: 0 0 30px rgba(227, 24, 55, 0.15), 0 4px 20px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+  }
+
+  /* Stats counter animation */
+  .stat-value {
+    background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Red accent border */
+  .border-accent-red {
+    border-color: rgba(227, 24, 55, 0.3);
+  }
+
+  /* Floating animation */
+  .float-animation {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
 }

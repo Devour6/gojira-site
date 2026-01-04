@@ -4,7 +4,7 @@ import { Footer } from "@/components/footer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Copy, RefreshCw, CheckCircle } from "lucide-react";
+import { Copy, RefreshCw, CheckCircle, Shield, Zap, Server } from "lucide-react";
 import { SiDiscord } from "react-icons/si";
 import { useState } from "react";
 import type { ValidatorStatsResponse, StakingStatsResponse } from "@shared/routes";
@@ -51,8 +51,13 @@ export default function Validator() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="pt-24 pb-20 px-4">
-        <div className="max-w-6xl mx-auto">
+      <main className="pt-28 pb-20 px-4 relative">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+        </div>
+
+        <div className="max-w-6xl mx-auto relative z-10">
           <div className="mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
               Validator Details
@@ -63,16 +68,49 @@ export default function Validator() {
             </p>
           </div>
 
+          <div className="grid md:grid-cols-3 gap-6 mb-10">
+            <div className="p-5 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 card-glow flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <Shield className="w-6 h-6 text-gojira-red" />
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-white">{validatorLoading ? "..." : `${validatorData?.uptime30d}%`}</div>
+                <div className="text-sm text-muted-foreground">30-Day Uptime</div>
+              </div>
+            </div>
+            <div className="p-5 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 card-glow flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <Zap className="w-6 h-6 text-gojira-red" />
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-gojira-red">{validatorLoading ? "..." : `${validatorData?.apy}%`}</div>
+                <div className="text-sm text-muted-foreground">Current APY</div>
+              </div>
+            </div>
+            <div className="p-5 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 card-glow flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <Server className="w-6 h-6 text-gojira-red" />
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-white">{validatorLoading ? "..." : `${validatorData?.commission}%`}</div>
+                <div className="text-sm text-muted-foreground">Commission</div>
+              </div>
+            </div>
+          </div>
+
           <div className="grid md:grid-cols-2 gap-8">
-            <Card className="bg-card border-border">
+            <Card className="bg-card border-border card-glow">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-8">
                   <h3 className="text-xl font-semibold text-white">Validator Details</h3>
-                  <img src={logoImage} alt="Gojira" className="w-10 h-10 rounded-full" />
+                  <div className="relative">
+                    <img src={logoImage} alt="Gojira" className="w-12 h-12 rounded-full border-2 border-primary/30" />
+                    <div className="absolute inset-0 rounded-full bg-primary/20 blur-md -z-10" />
+                  </div>
                 </div>
 
-                <div className="space-y-6">
-                  <div className="flex items-start justify-between gap-4 border-b border-border pb-4">
+                <div className="space-y-0">
+                  <div className="flex items-start justify-between gap-4 py-4 border-b border-border">
                     <span className="text-muted-foreground text-sm shrink-0">Identity</span>
                     <div className="flex items-center gap-2">
                       <span className="text-white font-mono text-sm truncate" data-testid="text-identity">
@@ -80,7 +118,7 @@ export default function Validator() {
                       </span>
                       <button
                         onClick={() => copyToClipboard(validatorData?.identity ?? "", "identity")}
-                        className="text-muted-foreground hover:text-white shrink-0"
+                        className="text-muted-foreground hover:text-primary shrink-0 transition-colors"
                         data-testid="button-copy-identity"
                       >
                         {copiedField === "identity" ? (
@@ -92,7 +130,7 @@ export default function Validator() {
                     </div>
                   </div>
 
-                  <div className="flex items-start justify-between gap-4 border-b border-border pb-4">
+                  <div className="flex items-start justify-between gap-4 py-4 border-b border-border">
                     <span className="text-muted-foreground text-sm shrink-0">Vote Account</span>
                     <div className="flex items-center gap-2">
                       <span className="text-white font-mono text-sm truncate" data-testid="text-vote-account">
@@ -100,7 +138,7 @@ export default function Validator() {
                       </span>
                       <button
                         onClick={() => copyToClipboard(validatorData?.voteAccount ?? "", "voteAccount")}
-                        className="text-muted-foreground hover:text-white shrink-0"
+                        className="text-muted-foreground hover:text-primary shrink-0 transition-colors"
                         data-testid="button-copy-vote-account"
                       >
                         {copiedField === "voteAccount" ? (
@@ -112,31 +150,31 @@ export default function Validator() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between border-b border-border pb-4">
+                  <div className="flex items-center justify-between py-4 border-b border-border">
                     <span className="text-muted-foreground text-sm">Commission</span>
                     <span className="text-white font-medium" data-testid="text-commission">
                       {validatorLoading ? "..." : `${validatorData?.commission}%`}
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-between border-b border-border pb-4">
+                  <div className="flex items-center justify-between py-4 border-b border-border">
                     <span className="text-muted-foreground text-sm">APY</span>
-                    <span className="text-white font-medium" data-testid="text-validator-apy">
+                    <span className="text-gojira-red font-medium" data-testid="text-validator-apy">
                       {validatorLoading ? "..." : `${validatorData?.apy}%`}
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-between border-b border-border pb-4">
+                  <div className="flex items-center justify-between py-4 border-b border-border">
                     <span className="text-muted-foreground text-sm">Uptime (30d)</span>
                     <span className="text-white font-medium" data-testid="text-validator-uptime">
                       {validatorLoading ? "..." : `${validatorData?.uptime30d}%`}
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between py-4">
                     <span className="text-muted-foreground text-sm">Status</span>
                     <div className="flex items-center gap-2" data-testid="badge-status">
-                      <span className={`w-2 h-2 rounded-full ${validatorData?.status === "Active" ? "bg-green-500" : "bg-red-500"}`} />
+                      <span className={`w-2 h-2 rounded-full pulse-glow ${validatorData?.status === "Active" ? "bg-green-500" : "bg-red-500"}`} />
                       <span className={validatorData?.status === "Active" ? "text-green-500 font-medium" : "text-red-500 font-medium"}>
                         {validatorLoading ? "..." : validatorData?.status}
                       </span>
@@ -146,21 +184,21 @@ export default function Validator() {
               </div>
             </Card>
 
-            <Card className="bg-card border-border">
+            <Card className="bg-card border-border card-glow">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-semibold text-white">Stake Solana</h3>
-                  <span className="text-gojira-red font-medium" data-testid="text-widget-apy">
-                    {stakingLoading ? "..." : `${stakingData?.apy?.toFixed(2) ?? "0.00"}% APY`}
+                  <span className="text-gojira-red font-bold text-lg" data-testid="text-widget-apy">
+                    {stakingLoading ? "..." : `${stakingData?.apy?.toFixed(2) ?? "0.00"}%`} <span className="text-sm font-normal">APY</span>
                   </span>
                 </div>
 
-                <div className="flex mb-6 bg-muted rounded-md p-1">
+                <div className="flex mb-6 bg-muted/50 rounded-lg p-1">
                   <button
                     onClick={() => setActiveTab("stake")}
-                    className={`flex-1 py-2.5 text-sm font-medium rounded transition-colors ${
+                    className={`flex-1 py-3 text-sm font-medium rounded-md transition-all ${
                       activeTab === "stake"
-                        ? "bg-card text-white shadow-sm"
+                        ? "bg-primary text-white shadow-lg glow-red-sm"
                         : "text-muted-foreground hover:text-white"
                     }`}
                     data-testid="button-validator-tab-stake"
@@ -169,9 +207,9 @@ export default function Validator() {
                   </button>
                   <button
                     onClick={() => setActiveTab("unstake")}
-                    className={`flex-1 py-2.5 text-sm font-medium rounded transition-colors ${
+                    className={`flex-1 py-3 text-sm font-medium rounded-md transition-all ${
                       activeTab === "unstake"
-                        ? "bg-card text-white shadow-sm"
+                        ? "bg-primary text-white shadow-lg glow-red-sm"
                         : "text-muted-foreground hover:text-white"
                     }`}
                     data-testid="button-validator-tab-unstake"
@@ -184,56 +222,56 @@ export default function Validator() {
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-sm text-muted-foreground">You're Staking</span>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm" className="text-xs px-3">
+                      <Button variant="outline" size="sm" className="text-xs px-3 border-primary/30 hover:border-primary">
                         HALF
                       </Button>
-                      <Button variant="outline" size="sm" className="text-xs px-3">
+                      <Button variant="outline" size="sm" className="text-xs px-3 border-primary/30 hover:border-primary">
                         MAX
                       </Button>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 bg-muted rounded-md p-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-r from-purple-500 to-green-400 flex items-center justify-center">
-                        <span className="text-xs font-bold text-white">S</span>
+                  <div className="flex items-center gap-3 bg-muted/50 rounded-lg p-4 border border-border/50">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-green-400 flex items-center justify-center">
+                        <span className="text-sm font-bold text-white">S</span>
                       </div>
-                      <span className="text-white font-medium">SOL</span>
+                      <span className="text-white font-semibold">SOL</span>
                     </div>
                     <Input
                       type="number"
                       placeholder="0.0"
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
-                      className="flex-1 bg-transparent border-0 text-right text-white text-lg font-medium focus-visible:ring-0"
+                      className="flex-1 bg-transparent border-0 text-right text-white text-xl font-semibold focus-visible:ring-0"
                       data-testid="input-validator-stake-amount"
                     />
                   </div>
                 </div>
 
-                <div className="flex gap-2 mb-6">
+                <div className="flex gap-3 mb-6">
                   <Button 
-                    className="flex-1 bg-primary hover:bg-primary/90 h-11"
+                    className="flex-1 bg-primary hover:bg-primary/90 h-12 text-base font-semibold glow-red-sm"
                     data-testid="button-validator-connect-wallet"
                   >
                     Connect Wallet
                   </Button>
-                  <Button variant="outline" size="icon" className="h-11 w-11">
-                    <RefreshCw className="w-4 h-4" />
+                  <Button variant="outline" size="icon" className="h-12 w-12 border-primary/30 hover:border-primary">
+                    <RefreshCw className="w-5 h-5" />
                   </Button>
                 </div>
 
                 <div className="space-y-4 text-sm">
-                  <a href="#" className="text-gojira-red hover:underline block">
+                  <a href="#" className="text-gojira-red hover:underline block font-medium">
                     Disclaimer
                   </a>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between py-2 border-b border-border/50">
                     <span className="text-muted-foreground">Available Balance</span>
                     <span className="text-white font-medium">
                       {stakingLoading ? "..." : `${stakingData?.availableBalance?.toFixed(4) ?? "0.0000"} SOL`}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between py-2 border-b border-border/50">
                     <span className="text-muted-foreground">Next Epoch</span>
                     <span className="text-white font-medium">
                       {stakingLoading || !stakingData?.nextEpoch ? "..." : formatDate(stakingData.nextEpoch)}
@@ -241,10 +279,10 @@ export default function Validator() {
                   </div>
                   <a 
                     href="#" 
-                    className="inline-flex items-center gap-2 text-muted-foreground hover:text-white transition-colors"
+                    className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors pt-2"
                     data-testid="link-discord"
                   >
-                    <SiDiscord className="w-4 h-4" />
+                    <SiDiscord className="w-5 h-5" />
                     <span>Discord</span>
                   </a>
                 </div>
