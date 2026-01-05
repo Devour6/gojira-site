@@ -21,7 +21,7 @@ export function HeroSection() {
   return (
     <section 
       id="hero" 
-      className="min-h-screen flex flex-col items-center justify-center pt-16 px-4 relative overflow-hidden"
+      className="min-h-screen flex flex-col items-center justify-center pt-24 md:pt-32 px-4 relative overflow-hidden"
     >
       <div 
         className="absolute inset-0 pointer-events-none opacity-20"
