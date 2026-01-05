@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { Badge } from "@/components/ui/badge";
 import { ArrowUpRight } from "lucide-react";
 import type { PortfolioListResponse } from "@shared/routes";
 
@@ -16,9 +15,6 @@ export function PortfolioSection() {
       
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="text-center mb-16">
-          <Badge variant="outline" className="mb-4 text-gojira-red border-gojira-red/30 bg-gojira-red/10 px-4 py-1">
-            OUR INVESTMENTS
-          </Badge>
           <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
             Strategic <span className="text-gojira-red">Portfolio</span>
           </h2>
@@ -58,13 +54,9 @@ export function PortfolioSection() {
                     {item.name}
                   </h3>
                   
-                  <p className="text-muted-foreground text-sm mb-3">
+                  <p className="text-muted-foreground text-sm">
                     {item.description}
                   </p>
-                  
-                  <Badge variant="secondary" className="text-xs">
-                    {item.category}
-                  </Badge>
                 </div>
               </a>
             ))
