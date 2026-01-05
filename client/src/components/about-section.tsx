@@ -1,10 +1,22 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import gojiraBanner from "@assets/GOJIRA_BANNER_1767555604824.jpg";
 
 export function AboutSection() {
   return (
-    <section id="about" className="py-24 px-4 relative">
+    <section id="about" className="py-24 px-4 relative overflow-hidden">
+      <div 
+        className="absolute inset-0 pointer-events-none opacity-10"
+        style={{
+          backgroundImage: `url(${gojiraBanner})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'right center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-l from-background via-background/90 to-background pointer-events-none" />
+      
       <div className="max-w-4xl mx-auto relative z-10">
         <div className="text-center">
           <Badge variant="outline" className="mb-4 text-gojira-red border-gojira-red/30 bg-gojira-red/10 px-4 py-1">

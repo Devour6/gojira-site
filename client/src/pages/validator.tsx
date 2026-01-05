@@ -9,6 +9,7 @@ import { SiDiscord } from "react-icons/si";
 import { useState } from "react";
 import type { ValidatorStatsResponse, StakingStatsResponse } from "@shared/routes";
 import logoImage from "@assets/GOJIRA_X_1767555736780.jpg";
+import gojiraBanner from "@assets/GOJIRA_BANNER_1767555604824.jpg";
 
 export default function Validator() {
   const [activeTab, setActiveTab] = useState<"stake" | "unstake">("stake");
@@ -51,11 +52,17 @@ export default function Validator() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="pt-28 pb-20 px-4 relative">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-        </div>
+      <main className="pt-28 pb-20 px-4 relative overflow-hidden">
+        <div 
+          className="absolute inset-0 pointer-events-none opacity-10"
+          style={{
+            backgroundImage: `url(${gojiraBanner})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'right center',
+            backgroundRepeat: 'no-repeat',
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-l from-background via-background/90 to-background pointer-events-none" />
 
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="mb-12">
