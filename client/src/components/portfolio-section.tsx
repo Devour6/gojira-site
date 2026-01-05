@@ -41,20 +41,16 @@ export function PortfolioSection() {
                 data-testid={`card-portfolio-${item.id}`}
                 className="group relative"
               >
-                <div className="p-6 rounded-lg bg-card/50 border border-border/50 backdrop-blur-sm hover-elevate transition-all duration-300">
+                <div className="p-6 rounded-lg bg-card/50 border border-border/50 backdrop-blur-sm hover-elevate transition-all duration-300 h-full flex flex-col">
                   <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
                     <ArrowUpRight className="w-4 h-4 text-gojira-red" />
-                  </div>
-                  
-                  <div className="mb-4">
-                    <span className="text-xs text-muted-foreground font-mono">0{index + 1}</span>
                   </div>
                   
                   <h3 className="text-white font-bold text-xl mb-2 group-hover:text-gojira-red transition-colors">
                     {item.name}
                   </h3>
                   
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-muted-foreground text-sm flex-1">
                     {item.description}
                   </p>
                 </div>
