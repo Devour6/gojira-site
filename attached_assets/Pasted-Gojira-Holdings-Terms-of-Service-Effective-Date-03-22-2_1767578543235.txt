@@ -1,0 +1,25 @@
+Gojira Holdings – Terms of Service
+Effective Date: 03/22/25
+
+Welcome to Gojira Holdings. By accessing our website ("Site") or using any of our services, you agree to the following Terms of Service ("Terms"). If you do not agree to these Terms, please do not use the Site.
+
+1. Use of the Site
+You agree to use the Site for informational purposes only. You may not use the Site for any unlawful or prohibited activities. Gojira Holdings reserves the right to restrict or terminate your access to the Site at any time, without notice.
+
+2. No Financial Advice
+The content provided on this Site is for informational purposes only and should not be construed as financial, investment, legal, or tax advice. Always do your own research before making any decisions regarding staking or investments.
+
+3. Staking Information
+Staking with Gojira Holdings' validator is completely non-custodial. You retain full control over your SOL at all times. Any references to staking are not guarantees of earnings or performance. Validator performance may vary and past performance does not guarantee future results. Staking with Gojira Holdings does not grant any ownership rights, voting power, or equity in Gojira Holdings or any projects it has invested in.
+
+4. Investments and Projects
+Information about projects Gojira Holdings has invested in is provided for transparency and informational purposes only. We are not soliciting investments or offering securities through this Site. No content on this Site should be interpreted to imply that staking or interacting with Gojira Holdings results in financial interest, partial ownership, or any rights over these investments.
+
+5. Intellectual Property
+All content on the Site, including text, graphics, logos, and images, is the property of Gojira Holdings and is protected by copyright and trademark laws. You may not reproduce or use any content without our prior written consent.
+
+6. Limitation of Liability
+Gojira Holdings shall not be liable for any damages resulting from the use or inability to use the Site, or for any errors or omissions in the content. All information is provided "as is."
+
+7. Modifications to the Terms
+We reserve the right to modify these Terms at any time. Any changes will be posted on this page with an updated effective date. Continued use of the Site constitutes your acceptance of the modified Terms.
