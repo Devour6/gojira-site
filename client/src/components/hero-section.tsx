@@ -70,24 +70,24 @@ export function HeroSection() {
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
           <div className="text-center p-4 md:p-6 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50">
-            <div className="text-2xl md:text-3xl font-bold text-white mb-2 truncate" data-testid="text-total-staked">
-              {isLoading ? "..." : formatNumber(stats?.totalStakedUsd ?? 0)}
+            <div className="text-xl md:text-2xl font-bold text-white mb-2" data-testid="text-total-staked">
+              {formatNumber(stats?.totalStakedUsd ?? 0)}
             </div>
             <div className="text-xs text-muted-foreground uppercase tracking-wider">
-              Total Staked
+              AUM
             </div>
           </div>
           <div className="text-center p-4 md:p-6 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50">
-            <div className="text-2xl md:text-3xl font-bold text-white mb-2" data-testid="text-apy">
-              {isLoading ? "..." : `${stats?.apy ?? 0}%`}
+            <div className="text-xl md:text-2xl font-bold text-white mb-2" data-testid="text-apy">
+              {`${stats?.apy ?? 0}%`}
             </div>
             <div className="text-xs text-muted-foreground uppercase tracking-wider">
               APY
             </div>
           </div>
           <div className="text-center p-4 md:p-6 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50">
-            <div className="text-2xl md:text-3xl font-bold text-white mb-2" data-testid="text-uptime">
-              {isLoading ? "..." : `${stats?.uptime30d ?? 0}%`}
+            <div className="text-xl md:text-2xl font-bold text-white mb-2" data-testid="text-uptime">
+              {`${stats?.uptime30d ?? 0}%`}
             </div>
             <div className="text-xs text-muted-foreground uppercase tracking-wider">
               Uptime (30D)

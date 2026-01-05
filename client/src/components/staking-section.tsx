@@ -5,13 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { RefreshCw } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import type { StakingStatsResponse } from "@shared/routes";
 
 export function StakingSection() {
   const [activeTab, setActiveTab] = useState<"stake" | "unstake">("stake");
   const [amount, setAmount] = useState("");
-  const { toast } = useToast();
 
   const { data: stakingData, isLoading } = useQuery<StakingStatsResponse>({
     queryKey: ["/api/stats/staking"],
@@ -116,7 +114,6 @@ export function StakingSection() {
                 <Button 
                   className="flex-1 bg-primary hover:bg-primary/90"
                   data-testid="button-connect-wallet"
-                  onClick={() => toast({ title: "Coming Soon", description: "Wallet connection will be available soon." })}
                 >
                   Connect Wallet
                 </Button>

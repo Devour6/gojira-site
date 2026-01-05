@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Copy, RefreshCw, CheckCircle } from "lucide-react";
 import { SiDiscord } from "react-icons/si";
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
 import type { ValidatorStatsResponse, StakingStatsResponse } from "@shared/routes";
 import gojiraBanner from "@assets/GOJIRA_BANNER_1767555604824.jpg";
 
@@ -15,7 +14,6 @@ export default function Validator() {
   const [activeTab, setActiveTab] = useState<"stake" | "unstake">("stake");
   const [amount, setAmount] = useState("");
   const [copiedField, setCopiedField] = useState<string | null>(null);
-  const { toast } = useToast();
 
   const { data: validatorData, isLoading: validatorLoading } = useQuery<ValidatorStatsResponse>({
     queryKey: ["/api/stats/validator"],
@@ -243,7 +241,6 @@ export default function Validator() {
                     size="lg"
                     className="flex-1 bg-primary hover:bg-primary/90"
                     data-testid="button-validator-connect-wallet"
-                    onClick={() => toast({ title: "Coming Soon", description: "Wallet connection will be available soon." })}
                   >
                     Connect Wallet
                   </Button>

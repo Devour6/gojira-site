@@ -30,8 +30,8 @@ export async function registerRoutes(
 
   app.get(api.stats.validator.path, (req, res) => {
     res.json({
-      identity: "gojir4Wn8g...",
-      voteAccount: "goJiRADN9x...",
+      identity: "gojir4WnhS7VS1JdbnanJMzaMfr4UD7KeX1ixWAHEmw",
+      voteAccount: "goJiRADNdmfnJ4iWEyft7KaYMPTVsRba2Ee1akDEBXb",
       commission: 5,
       apy: 7.2,
       uptime30d: 99.98,
