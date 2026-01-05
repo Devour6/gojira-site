@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import logoImage from "@assets/GOJIRA_X_1767555736780.jpg";
 import gojiraSilhouette from "@assets/GOJIRA_STAKE_TEMPLATE_SVG_1767555625218.jpg";
 import type { HeroStatsResponse } from "@shared/routes";
 
@@ -36,17 +35,6 @@ export function HeroSection() {
       <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-background pointer-events-none" />
       
       <div className="relative z-10 max-w-4xl mx-auto text-center">
-        <div className="mb-8">
-          <div className="relative inline-block">
-            <img 
-              src={logoImage} 
-              alt="Gojira Logo" 
-              className="w-24 h-24 mx-auto rounded-full glow-red border-2 border-primary/30"
-              data-testid="img-hero-logo"
-            />
-          </div>
-        </div>
-
         <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight">
           Pushing the Limits<br />
           of <span className="text-gojira-red">Web3 Innovation</span>
@@ -80,28 +68,28 @@ export function HeroSection() {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8 max-w-3xl mx-auto">
-          <div className="text-center p-6 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50">
-            <div className="text-3xl md:text-4xl font-bold text-white mb-2" data-testid="text-total-staked">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
+          <div className="text-center p-4 md:p-6 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50">
+            <div className="text-2xl md:text-3xl font-bold text-white mb-2 truncate" data-testid="text-total-staked">
               {isLoading ? "..." : formatNumber(stats?.totalStakedUsd ?? 0)}
             </div>
-            <div className="text-xs md:text-sm text-muted-foreground uppercase tracking-widest">
-              Total Assets Staked
+            <div className="text-xs text-muted-foreground uppercase tracking-wider">
+              Total Staked
             </div>
           </div>
-          <div className="text-center p-6 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50">
-            <div className="text-3xl md:text-4xl font-bold text-white mb-2" data-testid="text-apy">
+          <div className="text-center p-4 md:p-6 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50">
+            <div className="text-2xl md:text-3xl font-bold text-white mb-2" data-testid="text-apy">
               {isLoading ? "..." : `${stats?.apy ?? 0}%`}
             </div>
-            <div className="text-xs md:text-sm text-muted-foreground uppercase tracking-widest">
+            <div className="text-xs text-muted-foreground uppercase tracking-wider">
               APY
             </div>
           </div>
-          <div className="text-center p-6 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50">
-            <div className="text-3xl md:text-4xl font-bold text-white mb-2" data-testid="text-uptime">
+          <div className="text-center p-4 md:p-6 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50">
+            <div className="text-2xl md:text-3xl font-bold text-white mb-2" data-testid="text-uptime">
               {isLoading ? "..." : `${stats?.uptime30d ?? 0}%`}
             </div>
-            <div className="text-xs md:text-sm text-muted-foreground uppercase tracking-widest">
+            <div className="text-xs text-muted-foreground uppercase tracking-wider">
               Uptime (30D)
             </div>
           </div>

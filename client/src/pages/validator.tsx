@@ -4,17 +4,18 @@ import { Footer } from "@/components/footer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Copy, RefreshCw, CheckCircle, Shield, Zap, Server } from "lucide-react";
+import { Copy, RefreshCw, CheckCircle } from "lucide-react";
 import { SiDiscord } from "react-icons/si";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 import type { ValidatorStatsResponse, StakingStatsResponse } from "@shared/routes";
-import logoImage from "@assets/GOJIRA_X_1767555736780.jpg";
 import gojiraBanner from "@assets/GOJIRA_BANNER_1767555604824.jpg";
 
 export default function Validator() {
   const [activeTab, setActiveTab] = useState<"stake" | "unstake">("stake");
   const [amount, setAmount] = useState("");
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const { data: validatorData, isLoading: validatorLoading } = useQuery<ValidatorStatsResponse>({
     queryKey: ["/api/stats/validator"],
@@ -75,45 +76,26 @@ export default function Validator() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 mb-10">
-            <div className="p-5 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 card-glow flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <Shield className="w-6 h-6 text-gojira-red" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-white">{validatorLoading ? "..." : `${validatorData?.uptime30d}%`}</div>
-                <div className="text-sm text-muted-foreground">30-Day Uptime</div>
-              </div>
+          <div className="grid grid-cols-3 gap-4 mb-10">
+            <div className="p-4 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 text-center">
+              <div className="text-2xl font-bold text-white">{validatorLoading ? "..." : `${validatorData?.uptime30d}%`}</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-wider">Uptime</div>
             </div>
-            <div className="p-5 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 card-glow flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <Zap className="w-6 h-6 text-gojira-red" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-white">{validatorLoading ? "..." : `${validatorData?.apy}%`}</div>
-                <div className="text-sm text-muted-foreground">Current APY</div>
-              </div>
+            <div className="p-4 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 text-center">
+              <div className="text-2xl font-bold text-white">{validatorLoading ? "..." : `${validatorData?.apy}%`}</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-wider">APY</div>
             </div>
-            <div className="p-5 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 card-glow flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <Server className="w-6 h-6 text-gojira-red" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-white">{validatorLoading ? "..." : `${validatorData?.commission}%`}</div>
-                <div className="text-sm text-muted-foreground">Commission</div>
-              </div>
+            <div className="p-4 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 text-center">
+              <div className="text-2xl font-bold text-white">{validatorLoading ? "..." : `${validatorData?.commission}%`}</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-wider">Commission</div>
             </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
             <Card className="bg-card border-border card-glow">
               <div className="p-6">
-                <div className="flex items-center justify-between mb-8">
+                <div className="mb-6">
                   <h3 className="text-xl font-semibold text-white">Validator Details</h3>
-                  <div className="relative">
-                    <img src={logoImage} alt="Gojira" className="w-12 h-12 rounded-full border-2 border-primary/30" />
-                    <div className="absolute inset-0 rounded-full bg-primary/20 blur-md -z-10" />
-                  </div>
                 </div>
 
                 <div className="space-y-0">
@@ -258,13 +240,15 @@ export default function Validator() {
 
                 <div className="flex gap-3 mb-6">
                   <Button 
-                    className="flex-1 bg-primary hover:bg-primary/90 h-12 text-base font-semibold glow-red-sm"
+                    size="lg"
+                    className="flex-1 bg-primary hover:bg-primary/90"
                     data-testid="button-validator-connect-wallet"
+                    onClick={() => toast({ title: "Coming Soon", description: "Wallet connection will be available soon." })}
                   >
                     Connect Wallet
                   </Button>
-                  <Button variant="outline" size="icon" className="h-12 w-12 border-primary/30 hover:border-primary">
-                    <RefreshCw className="w-5 h-5" />
+                  <Button variant="outline" size="icon">
+                    <RefreshCw className="w-4 h-4" />
                   </Button>
                 </div>
 
