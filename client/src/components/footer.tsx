@@ -1,4 +1,4 @@
-import { SiDiscord, SiX } from "react-icons/si";
+import { SiX } from "react-icons/si";
 import { useState } from "react";
 import logoImage from "@assets/GOJIRA_X_1767555736780.jpg";
 import {
@@ -55,13 +55,6 @@ export function Footer() {
                 data-testid="link-twitter"
               >
                 <SiX className="w-4 h-4" />
-              </a>
-              <a 
-                href="#" 
-                className="w-9 h-9 rounded-full bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/50 transition-colors"
-                data-testid="link-discord"
-              >
-                <SiDiscord className="w-4 h-4" />
               </a>
             </div>
           </div>
