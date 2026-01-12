@@ -9,12 +9,18 @@ import { SiDiscord } from "react-icons/si";
 import { useState } from "react";
 import type { ValidatorStatsResponse, StakingStatsResponse } from "@shared/routes";
 import gojiraBanner from "@assets/GOJIRA_BANNER_1767555604824.jpg";
+import useValidator from "@/hooks/use-validator";
+import { VALIDATOR_ADDRESS } from "@/lib/constants";
 
 export default function Validator() {
   const [activeTab, setActiveTab] = useState<"stake" | "unstake">("stake");
   const [amount, setAmount] = useState("");
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
+  // Fetch real-time validator data from StakeWiz
+  const { data: validatorRealData, isLoading: validatorRealLoading } = useValidator();
+
+  // Still fetch additional validator metadata from API (identity, commission, status, etc.)
   const { data: validatorData, isLoading: validatorLoading } = useQuery<ValidatorStatsResponse>({
     queryKey: ["/api/stats/validator"],
   });
@@ -23,6 +29,11 @@ export default function Validator() {
     queryKey: ["/api/stats/staking"],
     refetchInterval: 60000,
   });
+
+  // Combine real-time data with metadata
+  const isLoading = validatorRealLoading || validatorLoading;
+  const uptime = validatorRealData?.uptime ?? validatorData?.uptime30d ?? 0;
+  const apy = validatorRealData?.apy ?? validatorData?.apy ?? 0;
 
   const copyToClipboard = (text: string, field: string) => {
     navigator.clipboard.writeText(text);
@@ -35,8 +46,8 @@ export default function Validator() {
     return `${address.slice(0, 20)}...`;
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
+  const formatDate = (dateString: string | Date) => {
+    const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
     return date.toLocaleString("en-US", {
       month: "numeric",
       day: "numeric",
@@ -76,15 +87,15 @@ export default function Validator() {
 
           <div className="grid grid-cols-3 gap-4 mb-10">
             <div className="p-4 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 text-center">
-              <div className="text-2xl font-bold text-white">{validatorLoading ? "..." : `${validatorData?.uptime30d}%`}</div>
+              <div className="text-2xl font-bold text-white">{isLoading ? "..." : `${uptime.toFixed(2)}%`}</div>
               <div className="text-xs text-muted-foreground uppercase tracking-wider">Uptime</div>
             </div>
             <div className="p-4 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 text-center">
-              <div className="text-2xl font-bold text-white">{validatorLoading ? "..." : `${validatorData?.apy}%`}</div>
+              <div className="text-2xl font-bold text-white">{isLoading ? "..." : `${apy.toFixed(2)}%`}</div>
               <div className="text-xs text-muted-foreground uppercase tracking-wider">APY</div>
             </div>
             <div className="p-4 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 text-center">
-              <div className="text-2xl font-bold text-white">{validatorLoading ? "..." : `${validatorData?.commission}%`}</div>
+              <div className="text-2xl font-bold text-white">{validatorLoading ? "..." : `${validatorData?.commission ?? 0}%`}</div>
               <div className="text-xs text-muted-foreground uppercase tracking-wider">Commission</div>
             </div>
           </div>
@@ -121,10 +132,10 @@ export default function Validator() {
                     <span className="text-muted-foreground text-sm shrink-0">Vote Account</span>
                     <div className="flex items-center gap-2">
                       <span className="text-white font-mono text-sm truncate" data-testid="text-vote-account">
-                        {validatorLoading ? "..." : truncateAddress(validatorData?.voteAccount ?? "")}
+                        {validatorLoading ? "..." : truncateAddress(validatorData?.voteAccount ?? VALIDATOR_ADDRESS)}
                       </span>
                       <button
-                        onClick={() => copyToClipboard(validatorData?.voteAccount ?? "", "voteAccount")}
+                        onClick={() => copyToClipboard(validatorData?.voteAccount ?? VALIDATOR_ADDRESS, "voteAccount")}
                         className="text-muted-foreground hover:text-primary shrink-0 transition-colors"
                         data-testid="button-copy-vote-account"
                       >
@@ -147,14 +158,14 @@ export default function Validator() {
                   <div className="flex items-center justify-between py-4 border-b border-border">
                     <span className="text-muted-foreground text-sm">APY</span>
                     <span className="text-white font-medium" data-testid="text-validator-apy">
-                      {validatorLoading ? "..." : `${validatorData?.apy}%`}
+                      {isLoading ? "..." : `${apy.toFixed(2)}%`}
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between py-4 border-b border-border">
                     <span className="text-muted-foreground text-sm">Uptime (30d)</span>
                     <span className="text-white font-medium" data-testid="text-validator-uptime">
-                      {validatorLoading ? "..." : `${validatorData?.uptime30d}%`}
+                      {isLoading ? "..." : `${uptime.toFixed(2)}%`}
                     </span>
                   </div>
 
@@ -262,7 +273,9 @@ export default function Validator() {
                   <div className="flex items-center justify-between py-2 border-b border-border/50">
                     <span className="text-muted-foreground">Next Epoch</span>
                     <span className="text-white font-medium">
-                      {stakingLoading || !stakingData?.nextEpoch ? "..." : formatDate(stakingData.nextEpoch)}
+                      {validatorRealLoading || !validatorRealData?.nextEpoch 
+                        ? (stakingLoading || !stakingData?.nextEpoch ? "..." : formatDate(stakingData.nextEpoch))
+                        : formatDate(validatorRealData.nextEpoch)}
                     </span>
                   </div>
                   <a 
