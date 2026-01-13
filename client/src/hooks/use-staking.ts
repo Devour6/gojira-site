@@ -2,12 +2,10 @@ import { useState } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import {
   PublicKey,
-  SystemProgram,
   Transaction,
   StakeProgram,
   LAMPORTS_PER_SOL,
   Keypair,
-  sendAndConfirmTransaction,
   Authorized,
   Lockup,
 } from '@solana/web3.js'
@@ -16,13 +14,13 @@ import { VALIDATOR_ADDRESS } from '@/lib/constants'
 import { useToast } from '@/hooks/use-toast'
 
 const MINIMUM_STAKE_AMOUNT = 0.01 // Minimum stake in SOL
-const STAKE_ACCOUNT_RENT = 2.28 // Approximate rent exemption for stake account
 
 export interface StakeAccountInfo {
   pubkey: PublicKey
   lamports: number
   isActive: boolean
   withdrawer?: PublicKey
+  deactivationEpoch?: string | number
 }
 
 export function useStaking() {
@@ -55,7 +53,7 @@ export function useStaking() {
               {
                 memcmp: {
                   offset: 12, // Stake account authorized staker offset
-                  bytes: wallet.publicKey.toBytes(),
+                  bytes: wallet.publicKey.toBytes().toString(),
                 },
               },
             ],
@@ -65,8 +63,15 @@ export function useStaking() {
         const stakeAccountInfos: StakeAccountInfo[] = []
 
         for (const account of stakeAccounts) {
-          const parsed = account.account.data.parsed?.info
-          if (!parsed) continue
+          const accountData = account.account.data
+          if (
+            !accountData ||
+            typeof accountData === 'string' ||
+            !('parsed' in accountData)
+          )
+            continue
+          const parsed = accountData.parsed as any
+          if (!parsed || !parsed.info) continue
 
           // Check if this stake account is delegated to our validator
           const delegation = parsed.delegation
@@ -88,6 +93,7 @@ export function useStaking() {
                 withdrawer: parsed.withdrawer
                   ? new PublicKey(parsed.withdrawer)
                   : undefined,
+                deactivationEpoch: delegation?.deactivationEpoch,
               })
             }
           }
@@ -233,18 +239,69 @@ export function useStaking() {
     setIsUnstaking(true)
 
     try {
+      // Get stake account info
+      const stakeAccountInfo = await connection.getAccountInfo(
+        stakeAccountPubkey
+      )
+      if (!stakeAccountInfo) {
+        throw new Error('Stake account not found')
+      }
+
+      // Get parsed stake account data to check deactivationEpoch
+      const stakeAccountData = await connection.getParsedAccountInfo(
+        stakeAccountPubkey
+      )
+      let deactivationEpoch: string | number | undefined
+
+      if (
+        stakeAccountData.value?.data &&
+        'parsed' in stakeAccountData.value.data
+      ) {
+        const parsed = stakeAccountData.value.data.parsed as any
+        const delegation = parsed?.info?.delegation
+        deactivationEpoch = delegation?.deactivationEpoch
+      } else {
+        // Fallback: check if stake account is active using stake activation
+        const stakeActivation = await connection.getStakeActivation(
+          stakeAccountPubkey
+        )
+        // If active, we'll treat it as needing deactivation
+        deactivationEpoch =
+          stakeActivation.state === 'active'
+            ? '18446744073709551615'
+            : undefined
+      }
+
       const transaction = new Transaction()
 
-      // Deactivate stake account
-      transaction.add(
-        StakeProgram.deactivate({
+      // If stake account is still active (deactivationEpoch == "18446744073709551615"), deactivate it
+      const deactivationEpochStr = deactivationEpoch
+        ? String(deactivationEpoch)
+        : ''
+      const isActive = deactivationEpochStr === '18446744073709551615'
+      if (isActive) {
+        const deactivateIx = StakeProgram.deactivate({
           stakePubkey: stakeAccountPubkey,
           authorizedPubkey: wallet.publicKey,
-        })
-      )
+        }).instructions.filter((t) =>
+          t.programId.equals(StakeProgram.programId)
+        )[0]
+        transaction.add(deactivateIx)
+      }
+
+      // Withdraw from stake account
+      const withdrawIx = StakeProgram.withdraw({
+        stakePubkey: stakeAccountPubkey,
+        authorizedPubkey: wallet.publicKey,
+        toPubkey: wallet.publicKey,
+        lamports: stakeAccountInfo.lamports,
+      }).instructions.filter((t) =>
+        t.programId.equals(StakeProgram.programId)
+      )[0]
+      transaction.add(withdrawIx)
 
       // Get recent blockhash
-      const { blockhash } = await connection.getLatestBlockhash('finalized')
+      const { blockhash } = await connection.getLatestBlockhash('confirmed')
       transaction.recentBlockhash = blockhash
       transaction.feePayer = wallet.publicKey
 
@@ -257,8 +314,8 @@ export function useStaking() {
       await connection.confirmTransaction(signature, 'confirmed')
 
       toast({
-        title: 'Unstaking initiated',
-        description: `Stake account deactivated. You can withdraw after the cooldown period. Transaction: ${signature.slice(
+        title: 'Unstaking successful!',
+        description: `Successfully unstaked and withdrew SOL. Transaction: ${signature.slice(
           0,
           8
         )}...`,
