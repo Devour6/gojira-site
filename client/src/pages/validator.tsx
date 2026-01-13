@@ -4,18 +4,35 @@ import { Footer } from "@/components/footer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Copy, RefreshCw, CheckCircle } from "lucide-react";
+import { Copy, RefreshCw, CheckCircle, Loader2 } from "lucide-react";
 import { SiDiscord } from "react-icons/si";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import type { ValidatorStatsResponse, StakingStatsResponse } from "@shared/routes";
 import gojiraBanner from "@assets/GOJIRA_BANNER_1767555604824.jpg";
 import useValidator from "@/hooks/use-validator";
 import { VALIDATOR_ADDRESS } from "@/lib/constants";
+import { useWallet } from "@/hooks/use-wallet";
+import { useStaking } from "@/hooks/use-staking";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 export default function Validator() {
   const [activeTab, setActiveTab] = useState<"stake" | "unstake">("stake");
   const [amount, setAmount] = useState("");
   const [copiedField, setCopiedField] = useState<string | null>(null);
+
+  // Wallet and staking hooks
+  const wallet = useWallet();
+  const {
+    totalStaked,
+    stakeAccounts,
+    isLoadingStakeAccounts,
+    stake,
+    unstake,
+    withdraw,
+    isStaking,
+    isUnstaking,
+    refetchStakeAccounts,
+  } = useStaking();
 
   // Fetch real-time validator data from StakeWiz
   const { data: validatorRealData, isLoading: validatorRealLoading } = useValidator();
@@ -34,6 +51,15 @@ export default function Validator() {
   const isLoading = validatorRealLoading || validatorLoading;
   const uptime = validatorRealData?.uptime ?? validatorData?.uptime30d ?? 0;
   const apy = validatorRealData?.apy ?? validatorData?.apy ?? 0;
+
+  // Calculate available balance (wallet balance - rent if no stake accounts)
+  const availableBalance = useMemo(() => {
+    if (!wallet.isConnected) return 0;
+    const balance = wallet.balance;
+    // If user has no stake accounts, reserve rent for new account
+    const rentReserve = stakeAccounts.length === 0 ? 2.28 : 0;
+    return Math.max(0, balance - rentReserve);
+  }, [wallet.balance, wallet.isConnected, stakeAccounts.length]);
 
   const copyToClipboard = (text: string, field: string) => {
     navigator.clipboard.writeText(text);
@@ -59,11 +85,89 @@ export default function Validator() {
     });
   };
 
+  // Handle HALF and MAX buttons
+  const handleHalf = () => {
+    if (activeTab === "stake") {
+      setAmount((wallet.balance / 2).toFixed(4));
+    } else {
+      setAmount((totalStaked / 2).toFixed(4));
+    }
+  };
+
+  const handleMax = () => {
+    if (activeTab === "stake") {
+      setAmount(wallet.balance.toFixed(4));
+    } else {
+      setAmount(totalStaked.toFixed(4));
+    }
+  };
+
+  // Handle stake/unstake transactions
+  const handleStake = async () => {
+    const amountNum = parseFloat(amount);
+    if (isNaN(amountNum) || amountNum <= 0) return;
+
+    const signature = await stake(amountNum);
+    if (signature) {
+      setAmount("");
+      refetchStakeAccounts();
+    }
+  };
+
+  const handleUnstake = async () => {
+    const amountNum = parseFloat(amount);
+    if (isNaN(amountNum) || amountNum <= 0) return;
+
+    // Find a stake account to unstake from
+    const accountToUnstake = stakeAccounts.find(
+      (acc) => acc.lamports / 1e9 >= amountNum && acc.isActive
+    );
+
+    if (!accountToUnstake) {
+      // If no single account has enough, unstake from the largest one
+      const largestAccount = stakeAccounts
+        .filter((acc) => acc.isActive)
+        .sort((a, b) => b.lamports - a.lamports)[0];
+
+      if (largestAccount) {
+        const signature = await unstake(largestAccount.pubkey);
+        if (signature) {
+          setAmount("");
+          refetchStakeAccounts();
+        }
+      }
+    } else {
+      const signature = await unstake(accountToUnstake.pubkey);
+      if (signature) {
+        setAmount("");
+        refetchStakeAccounts();
+      }
+    }
+  };
+
+  const handleTransaction = () => {
+    if (activeTab === "stake") {
+      handleStake();
+    } else {
+      handleUnstake();
+    }
+  };
+
+  const isTransactionDisabled = useMemo(() => {
+    if (!wallet.isConnected) return true;
+    if (isStaking || isUnstaking) return true;
+    const amountNum = parseFloat(amount);
+    if (isNaN(amountNum) || amountNum <= 0) return true;
+    if (activeTab === "stake" && amountNum > wallet.balance) return true;
+    if (activeTab === "unstake" && amountNum > totalStaked) return true;
+    return false;
+  }, [wallet.isConnected, wallet.balance, isStaking, isUnstaking, amount, activeTab, totalStaked]);
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <main className="pt-28 pb-20 px-4 relative overflow-hidden">
-        <div 
+        <div
           className="absolute inset-0 pointer-events-none opacity-10"
           style={{
             backgroundImage: `url(${gojiraBanner})`,
@@ -187,29 +291,27 @@ export default function Validator() {
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-semibold text-white">Stake Solana</h3>
                   <span className="text-white font-bold text-lg" data-testid="text-widget-apy">
-                    {stakingLoading ? "..." : `${stakingData?.apy?.toFixed(2) ?? "0.00"}%`} <span className="text-sm font-normal">APY</span>
+                    {isLoading ? "..." : `${apy.toFixed(2)}%`} <span className="text-sm font-normal">APY</span>
                   </span>
                 </div>
 
                 <div className="flex mb-6 bg-muted/50 rounded-lg p-1">
                   <button
                     onClick={() => setActiveTab("stake")}
-                    className={`flex-1 py-3 text-sm font-medium rounded-md transition-all ${
-                      activeTab === "stake"
-                        ? "bg-primary text-white shadow-lg glow-red-sm"
-                        : "text-muted-foreground hover:text-white"
-                    }`}
+                    className={`flex-1 py-3 text-sm font-medium rounded-md transition-all ${activeTab === "stake"
+                      ? "bg-primary text-white shadow-lg glow-red-sm"
+                      : "text-muted-foreground hover:text-white"
+                      }`}
                     data-testid="button-validator-tab-stake"
                   >
                     Stake
                   </button>
                   <button
                     onClick={() => setActiveTab("unstake")}
-                    className={`flex-1 py-3 text-sm font-medium rounded-md transition-all ${
-                      activeTab === "unstake"
-                        ? "bg-primary text-white shadow-lg glow-red-sm"
-                        : "text-muted-foreground hover:text-white"
-                    }`}
+                    className={`flex-1 py-3 text-sm font-medium rounded-md transition-all ${activeTab === "unstake"
+                      ? "bg-primary text-white shadow-lg glow-red-sm"
+                      : "text-muted-foreground hover:text-white"
+                      }`}
                     data-testid="button-validator-tab-unstake"
                   >
                     Unstake
@@ -218,12 +320,26 @@ export default function Validator() {
 
                 <div className="mb-6">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm text-muted-foreground">You're Staking</span>
+                    <span className="text-sm text-muted-foreground">
+                      {activeTab === "stake" ? "Amount to Stake" : "Amount to Unstake"}
+                    </span>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm" className="text-xs px-3 border-primary/30 hover:border-primary">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs px-3 border-primary/30 hover:border-primary"
+                        onClick={handleHalf}
+                        disabled={!wallet.isConnected || isStaking || isUnstaking}
+                      >
                         HALF
                       </Button>
-                      <Button variant="outline" size="sm" className="text-xs px-3 border-primary/30 hover:border-primary">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs px-3 border-primary/30 hover:border-primary"
+                        onClick={handleMax}
+                        disabled={!wallet.isConnected || isStaking || isUnstaking}
+                      >
                         MAX
                       </Button>
                     </div>
@@ -243,22 +359,75 @@ export default function Validator() {
                       onChange={(e) => setAmount(e.target.value)}
                       className="flex-1 bg-transparent border-0 text-right text-white text-xl font-semibold focus-visible:ring-0"
                       data-testid="input-validator-stake-amount"
+                      disabled={!wallet.isConnected || isStaking || isUnstaking}
+                      min="0"
+                      step="0.01"
                     />
                   </div>
                 </div>
 
                 <div className="flex gap-3 mb-6">
-                  <Button 
-                    size="lg"
-                    className="flex-1 bg-primary hover:bg-primary/90"
-                    data-testid="button-validator-connect-wallet"
-                  >
-                    Connect Wallet
-                  </Button>
-                  <Button variant="outline" size="icon">
-                    <RefreshCw className="w-4 h-4" />
-                  </Button>
+                  {wallet.isConnected ? (
+                    <>
+                      <Button
+                        size="lg"
+                        className="flex-1 bg-primary hover:bg-primary/90"
+                        onClick={handleTransaction}
+                        disabled={isTransactionDisabled}
+                        data-testid="button-validator-stake-unstake"
+                      >
+                        {isStaking || isUnstaking ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            {isStaking ? "Staking..." : "Unstaking..."}
+                          </>
+                        ) : (
+                          activeTab === "stake" ? "Stake SOL" : "Unstake SOL"
+                        )}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => {
+                          refetchStakeAccounts();
+                        }}
+                        disabled={isStaking || isUnstaking}
+                      >
+                        <RefreshCw className="w-4 h-4" />
+                      </Button>
+                    </>
+                  ) : (
+                    <div className="flex-1">
+                      <WalletMultiButton className="!w-full !h-12 !bg-primary hover:!bg-primary/90 !text-white !rounded-lg" />
+                    </div>
+                  )}
                 </div>
+
+                {wallet.isConnected && (
+                  <div className="mb-4 p-3 bg-muted/30 rounded-lg border border-border/50">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Wallet</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-white font-mono text-xs">
+                          {wallet.formatAddress(wallet.publicKey?.toString())}
+                        </span>
+                        <button
+                          onClick={() =>
+                            wallet.publicKey &&
+                            copyToClipboard(wallet.publicKey.toString(), "wallet")
+                          }
+                          className="text-muted-foreground hover:text-primary transition-colors"
+                        >
+                          {copiedField === "wallet" ? (
+                            <CheckCircle className="w-3 h-3 text-green-500" />
+                          ) : (
+                            <Copy className="w-3 h-3" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <div className="space-y-4 text-sm">
                   <a href="#" className="text-gojira-red hover:underline block font-medium">
@@ -267,19 +436,33 @@ export default function Validator() {
                   <div className="flex items-center justify-between py-2 border-b border-border/50">
                     <span className="text-muted-foreground">Available Balance</span>
                     <span className="text-white font-medium">
-                      {stakingLoading ? "..." : `${stakingData?.availableBalance?.toFixed(4) ?? "0.0000"} SOL`}
+                      {wallet.isConnected
+                        ? wallet.isLoadingBalance
+                          ? "..."
+                          : `${wallet.balance.toFixed(4)} SOL`
+                        : stakingLoading
+                          ? "..."
+                          : `${stakingData?.availableBalance?.toFixed(4) ?? "0.0000"} SOL`}
                     </span>
                   </div>
+                  {wallet.isConnected && (
+                    <div className="flex items-center justify-between py-2 border-b border-border/50">
+                      <span className="text-muted-foreground">Total Staked</span>
+                      <span className="text-white font-medium">
+                        {isLoadingStakeAccounts ? "..." : `${totalStaked.toFixed(4)} SOL`}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex items-center justify-between py-2 border-b border-border/50">
                     <span className="text-muted-foreground">Next Epoch</span>
                     <span className="text-white font-medium">
-                      {validatorRealLoading || !validatorRealData?.nextEpoch 
+                      {validatorRealLoading || !validatorRealData?.nextEpoch
                         ? (stakingLoading || !stakingData?.nextEpoch ? "..." : formatDate(stakingData.nextEpoch))
                         : formatDate(validatorRealData.nextEpoch)}
                     </span>
                   </div>
-                  <a 
-                    href="#" 
+                  <a
+                    href="#"
                     className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors pt-2"
                     data-testid="link-discord"
                   >
