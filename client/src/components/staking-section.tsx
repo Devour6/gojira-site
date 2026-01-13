@@ -93,12 +93,7 @@ export function StakingSection() {
                 </div>
 
                 <div className="flex items-center gap-3 bg-muted rounded-lg p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-green-400 flex items-center justify-center">
-                      <span className="text-sm font-bold text-white">S</span>
-                    </div>
-                    <span className="text-white font-semibold">SOL</span>
-                  </div>
+                  <span className="text-white font-semibold">SOL</span>
                   <Input
                     type="number"
                     placeholder="0.0"
